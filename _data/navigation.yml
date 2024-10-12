@@ -1,0 +1,12 @@
+# main links
+main:
+  - title: "Home"
+    url: https://shail1027.github.io
+  - title: "About"
+    url: /about
+  - title: "Category"
+    url: /category
+  # - title: "Sample Collections"
+  #   url: /collection-archive/
+  # - title: "Sitemap"
+  #   url: /sitemap/
