@@ -22,11 +22,11 @@ locale: "ko-KR" #"en-US"
 title: "내가 사랑해 마지않을" # 상단 헤더에 보이는 블로그 명
 title_separator: "&#124;"
 subtitle: # site tagline that appears below site title in masthead
-name: "your name here" # 블로그 닉네임 설정
-description: "this is my blog!" # 블로그 설명
-url: "https://github-account.github.io" # 블로그 URL
+name: "zeta" # 블로그 닉네임 설정
+description: "내가 사랑해 마지않을" # 블로그 설명
+url: "https://shail1027.github.io" # 블로그 URL
 baseurl: # the subpath of your site, e.g. "/blog"
-repository: "github-account/github-account.github.io" # GitHub Repo 이름
+repository: "shail1027/shail1027.github.io" # GitHub Repo 이름
 teaser: #
 
 # logo                     : # 블로그명 앞에 로고 추가하고 싶을 경우 사용
@@ -98,8 +98,8 @@ analytics:
 
 # Site Author
 author:
-  name: "your name here" # 블로그 닉네임
-  avatar: "/assets/images/meee.png" # 블로그 프로필 사진
+  name: "zeta" # 블로그 닉네임
+  avatar: "/assets/images/prof.png" # 블로그 프로필 사진
   #   bio              : "hi all!"
   # location         : "Seoul, Korea"
   # email            : "youremailhere@xxxxxx.com"
