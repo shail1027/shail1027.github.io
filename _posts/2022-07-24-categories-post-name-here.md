@@ -3,11 +3,11 @@ title: "처음은 너무 어려워"
 excerpt: "삶의 지도"
 
 categories:
-  - "글또 10기"
+  - 글또
 # tags:
 #   - [tag1, tag2]
 
-permalink: /글또-10기/처음은-너무-어려워/
+permalink: /글또/처음은-너무-어려워/
 
 toc: true
 toc_sticky: true
