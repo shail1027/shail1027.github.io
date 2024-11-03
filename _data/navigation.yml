@@ -18,11 +18,11 @@ main:
 # sidebar navigation (categories)
 # 2022.02.15 sidebar update : simple ver.
 categories:
-  - title: "Categories1"
+  - title: "트러블슈팅"
     url: /categories/categories1/
-  - title: "Categories2"
+  - title: "프로젝트"
     url: /categories/categories2/
-  - title: "Categories3"
+  - title: "논문"
     url: /categories/categories3/
-  - title: "Categories4"
+  - title: "글또 10기"
     url: /categories/categories4/
