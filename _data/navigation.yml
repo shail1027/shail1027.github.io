@@ -19,10 +19,10 @@ main:
 # 2022.02.15 sidebar update : simple ver.
 categories:
   - title: "트러블슈팅"
-    url: /categories/categories1/
+    url: /categories/트러블슈팅/
   - title: "프로젝트"
-    url: /categories/categories2/
+    url: /categories/논문/
   - title: "논문"
-    url: /categories/categories3/
+    url: /categories/논문/
   - title: "글또"
-    url: /categories/categories4/
+    url: /categories/글또/
