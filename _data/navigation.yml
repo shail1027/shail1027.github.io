@@ -18,8 +18,8 @@ main:
 # sidebar navigation (categories)
 # 2022.02.15 sidebar update : simple ver.
 categories:
-  - title: "트러블슈팅"
-    url: /categories/트러블슈팅/
+  - title: "Trouble Shooting"
+    url: /categories/Trouble-Shooting/
   - title: "프로젝트"
     url: /categories/논문/
   - title: "논문"

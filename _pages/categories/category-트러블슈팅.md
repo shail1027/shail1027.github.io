@@ -1,9 +1,9 @@
 ---
-title: "트러블슈팅"
+title: "Trouble Shooting"
 layout: category
-permalink: /categories/트러블슈팅/
+permalink: /categories/Trouble-Shooting/
 author_profile: true
-taxonomy: 트러블슈팅
+taxonomy: Trouble-Shooting
 sidebar:
   nav: "categories"
 ---
