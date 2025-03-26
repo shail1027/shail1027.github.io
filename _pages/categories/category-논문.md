@@ -1,9 +1,9 @@
 ---
-title: "논문"
+title: "수업 TIL"
 layout: category
-permalink: /categories/논문/
+permalink: /categories/TIL/
 author_profile: true
-taxonomy: 논문
+taxonomy: TIL
 sidebar:
   nav: "categories"
 ---
