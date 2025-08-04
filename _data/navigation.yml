@@ -18,11 +18,9 @@ main:
 # sidebar navigation (categories)
 # 2022.02.15 sidebar update : simple ver.
 categories:
+  - title: "Paper"
+    url: /categories/Paper/
   - title: "Trouble Shooting"
     url: /categories/Trouble-Shooting/
-  - title: "Project"
-    url: /categories/Project/
-  - title: "수업 TIL"
-    url: /categories/TIL/
   - title: "글또"
     url: /categories/글또/
