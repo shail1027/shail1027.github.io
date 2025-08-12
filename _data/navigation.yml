@@ -20,6 +20,8 @@ main:
 categories:
   - title: "Paper"
     url: /categories/Paper/
+  - title: "연구실"
+    url: /categories/DILAB/
   - title: "Trouble Shooting"
     url: /categories/Trouble-Shooting/
   - title: "글또"
