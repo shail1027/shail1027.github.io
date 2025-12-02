@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shail1027.github.io/sitemap.xml
