@@ -2,7 +2,7 @@
 title: LCK 데이터 기반 RAG 파이프라인 구축 [1]
 description:
 author: Lee Yebin
-date: 2026-01-02 21:54:00 +0800
+date: 2026-01-29 21:54:00 +0800
 categories: [PROJECTS, DILAB]
 tags: [연구실, RAG]
 pin: false
@@ -13,8 +13,6 @@ mermaid: true
 #   lqip: 
 #   alt:
 ---
-
- 이번 테스트의 목표는 단순히 "RAG를 구현했다"가 아니라, **"AI가 어떤 근거(Evidence)로 답변을 생성했는지 투명하게 시각화하는 것"**이다. 교수님의 핵심 요구사항이기도 했고, 실제로 RAG 시스템에서 가장 중요한 신뢰성 문제를 해결해보고 싶었기 때문이다.
 
 ## 1. 프로젝트 개요
 
