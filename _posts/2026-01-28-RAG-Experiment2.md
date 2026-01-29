@@ -2,7 +2,7 @@
 title: LCK 데이터 기반 RAG 파이프라인 구축 [2]
 description:
 author: Lee Yebin
-date: 2026-01-02 21:54:00 +0800
+date: 2026-01-29 21:54:00 +0800
 categories: [PROJECTS, DILAB]
 tags: [연구실, RAG]
 pin: false
