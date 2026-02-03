@@ -18,14 +18,14 @@ mermaid: true
  학부 1학년 때 혼자 웹을 공부 해봤었는데, 너무 재밌어서 평소에 생각하던 가상의 학교를 직접 사이트로 만들어보고자 했다. 그렇게 로고도 디자인하고, 사이트도 다른 고등학교의 웹사이트를 열심히 참고해가며 디자인을 했다. 생 HTML과 CSS코드를 1000줄 정도 치고 뿌듯해 했었던 기억이 있다.(AI도 없었을 떄라 정말 어떻게 했나 싶다...) 지금와서 다시 열어보니까 디자인도 아쉽고, 프로젝트 구조, 완성도 등등... 아쉬운 점이 많아서 React를 공부하는 겸 예전에 했던 이 프로젝트를 리팩토링 하기로 했다. 원래 프론트만 있었는데 Spring Boot를 공부할 겸 풀스택 프로젝트로 진행해보기로 했다.
 
 *기존 사이트 디자인*
-<img src="../assets/img/cwhs/3.jpg">
+![천월고 홈페이지 기존 화면](../assets/img/cwhs/3.jpg)
 
 ## 초기 세팅
 
 우선 초기 세팅부터 진행했다. 기존 프로젝트의 파일 구조는... 그냥 폴더 안에 전부 때려박았다. 그와중에 고맙게도 이미지는 따로 빼주어서 이미지를 골라내는 수고를 덜 수 있었다.
 
 *기존 프로젝트 파일 구조*
-<img src="../assets/img/cwhs/1.png">
+![천월고 홈페이지 파일 구조](../assets/img/cwhs/1.png)
 
 천월고 v2의 프론트는 React를 사용하기로 했다. 이전에 사용해본 적이 있기도 하고, 제대로 다시 공부해보고 싶었기 때문이다. 
 
@@ -46,7 +46,7 @@ React를 처음 공부했을 때 폴더 구조가 너무 복잡해서 손대기�
 mkdir -p assets/images components/common components/layout pages hooks types api utils
 ```
 
-<img src="../assets/img/cwhs/2.png">
+![천월고 홈페이지 새로운 파일 구조](../assets/img/cwhs/2.png)
 
 
 ## Header 제작
@@ -59,7 +59,7 @@ mkdir -p assets/images components/common components/layout pages hooks types api
 이런 식으로 마우스를 hover하면 drop down하는 형태의 메뉴이다.
 
 *기존 사이트 디자인*
-<img src="../assets/img/cwhs/4.png">
+![천월고 기존 헤더 디자인](../assets/img/cwhs/4.png)
 
 우선, `components/layout` 폴더에 `Header.tsx`를 만들고 작업을 시작했다.
 ```html
@@ -139,8 +139,7 @@ function App() {
 };
 ```
 
-
-<img src="../assets/img/cwhs/5.png">
+![천월고 홈페이지 새 디자인 헤더](../assets/img/cwhs/5.png)
 
 나름... 기존 스타일과 색을 유지하면서 괜찮은 디자인으로 뽑혔다고 생각한다. 
 
