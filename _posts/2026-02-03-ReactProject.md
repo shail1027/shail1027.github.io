@@ -1,7 +1,7 @@
 ---
 title: \[천월고 리팩토링 \#1] React + Spring Boot 풀스택 프로젝트의 시작
 author: Lee Yebin
-date: 2026-02-03 23:39:00 +0900
+date: 2026-02-03 15:36:00 +0900
 categories: [PROJECTS, Personal]
 tags: [사이드_프로젝트, React]
 pin: false
