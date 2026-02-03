@@ -4,7 +4,7 @@ description:
 author: Lee Yebin
 date: 2026-02-01 23:39:00 +0900
 categories: [PROJECTS, DILAB]
-tags: [연구실]
+tags: [연구실, RAG]
 pin: false
 math: true
 mermaid: true
