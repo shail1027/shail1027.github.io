@@ -1,5 +1,5 @@
 ---
-title: [천월고 리팩토링 #2] Header 구조수정 + 배너 만들기
+title: "[천월고 리팩토링 #2] Swiper로 배너 만들기
 author: Lee Yebin
 date: 2026-02-04 16:26:00 +0900
 categories: [PROJECTS, Personal]

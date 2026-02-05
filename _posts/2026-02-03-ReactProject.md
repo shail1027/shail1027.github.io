@@ -1,5 +1,5 @@
 ---
-title: [천월고 리팩토링 #1] React + Spring Boot 풀스택 프로젝트의 시작
+title: "[천월고 리팩토링 #1]  React + Spring Boot 풀스택 프로젝트의 시작"
 author: Lee Yebin
 date: 2026-02-03 15:36:00 +0900
 categories: [PROJECTS, Personal]
