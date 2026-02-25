@@ -62,74 +62,108 @@ mermaid: true
 
 ## 원본 데이터와의 비교
 
-Patient 10001217은 뇌종양(Brain Abscess)으로 인한 개두술(Craniotomy)을 받은 다발성 경화증(MS) 환자이다. 이 환자에 대한 원본 퇴원 기록지와 깃허브 프로젝트에서 생성된 요약본을 대조해보았다.
+### Patient 10000032
 
-### 1. 원본데이터 vs 요약본
+#### 진단명 및 진료과 (Diagnosis & Service)
 
-#### 원본 기록
+- 원본 데이터
+  - 진료과: `Service: MEDICINE` (내과)
+  - 퇴원 진단명: `Discharge Diagnosis: Ascites from Portal HTN` (문맥고혈압으로 인한 복수)
+- Short Prompt
+  - 진료과: `Admitting Service: Transplant` (이식외과)
+  - 진단명: `Discharge Diagnosis: OTHER DISORDERS OF THE LIVER` (간의 기타 질환)
+    - 구체적인 복수(Ascites)라는 병명이 사라지고, 뭉뚱그려진 상위 카테고리 병명으로 대체됨
+- Long Prompt
+  - 진단명: `Diagnosis Other disorders of the liver` (간의 기타 질환)
 
-> Chief Complaint: Left hand and face numbness, left hand weakness and clumsiness, fever, and headache.
+#### 주호소 및 입원 중 경과 (HPI & Hospital Course)
 
-(주호소 - 왼손 및 안면 마비, 왼손 위약감 및 둔함, 발열, 두통)
+이 환자의 핵심 치료 기록은 복수에 찬 물을 빼내는 시술(복수천자)과 이뇨제 조절이다.
 
-#### 요약본 (Short Prompt)
+- 원본 데이터
+  > Chief Complaint: Worsening ABD distension and pain (주호소: 악화되는 복부 팽창과 통증)
+  > 
+  > Major Surgical or Invasive Procedure: Paracentesis (주요 시술: 복수천자)
+  >
+  >Discharge Instructions:
+... did a paracentesis to remove 1.5L of fluid from your belly. We also placed you on you 40 mg of Lasix and 50 mg of Aldactone (배에서 1.5L의 체액을 제거하기 위해 복수천자를 시행함. 또한 이뇨제인 라식스 40mg과 알닥톤 50mg을 처방함.)
 
-> ...presented to the Emergency Department... with altered mental status.
+- Short Prompt
+  > During her brief stay, the patient received intravenous fluids and medications... (짧은 입원 기간 동안 환자는 정맥 수액과 약물을 투여받았다.)
+- Long Prompt
+  > She was found to be hypokalaemic and received potassium chloride replacement. A urine dipstick was positive for blood but urine culture showed mixed growth consistent with contamination. (환자는 저칼륨혈증이 발견되어 염화칼륨 보충을 받았다. 소변 스틱 검사에서 혈액 양성이 나왔으나 소변 배양 검사에서는 오염과 일치하는 혼합 성장이 나타났다.)
 
-(의식변화(Altered mental status)로 응급실에 내원함)
-
-#### 요약본 (Long prompt)
-
-> ...She presented with headache.
-
-(두통으로 입원함)
-
-- 뇌 질환에서 왼손마비(국소 신경학적 결손)와 의식변화는 완전히 다른 응급 상황이다. 원본 데이터에는 명백히 왼손 마비가 적혀있지만, 의식 변화라는 가짜 증상을 Hallucination하거나 아주 지엽적인 두통만 언급되어 있다.
-
-
-#### 원본 기록
-
-> On ___, Mrs. ___ was taken to the OR for a right parietal craniotomy...
-> 
-(며칠 뒤, 환자는 수술실로 옮겨져 우측 두정엽 개두술을 받았다.)
-
-
-#### 요약본 (Short Prompt)
-
-> Initial workup revealed encephalopathy and a history of recent craniotomy.
-
-(초기 검사에서 뇌병증과 최근 개두술을 받은 과거력이 확인됨)
-
-- 환자의 시술 코드표에서 개두수 ㄹ코드를 발견했지만, 문맥이 없으니 해당 수술이 입원해서 받은 수술인지, 과거에 받고 온 수술인지를 구분하지 못함.
+    - 원본의 경과 기록(Brief Hospital Course)에 따르면 `UA negative, Urine culture blood culture negative`(소변검사 음성, 소변 및 혈액 배양검사 음성) 이다. 
 
 
-#### 원본 기록
+#### 퇴원 처방 약물 (Discharge Medications) 
 
-> The final results on the abcess culture was streptococcus Milleri.
-
-(농양 배양 검사 결과 최종 결과는 스트렙토코쿠스 밀레리였음)
-
-#### 요약본 (Long prompt)
-
-> There was growth of Fusobacterium nucleatum in an abscess sample...
-
-(농양 샘플에서 푸소박테리움 뉴클레아툼이 배양됨)
-
-- 푸소박테리움은 해당 환자의 두 번째 입원 기록에 등장하는 균이다. 첫 번째 입원과 두 번째 입원의 검사 결과를 제대로 분리하지 못하고 다른 입원의 균 이름을 현재 요약본에 끌어다 썼다.
+- 원본 데이터
+  - 총 8개의 약물
+  - `Albuterol, Truvada, Furosemide, Ipratropium, Nicotine Patch, Raltegravir, Spironolactone, Acetaminophen.`
+- Short & Long Prompt
+  - `Heparin 5000 units SC TID` (해파린 5000단위 피하주사 하루 3번)
+    - 두 응답 모두 원본 퇴원 약물 목록에 없는 헤파린(Heparin, 항응고제)을 넣었다. 
+    - 하지만, 롱 프롬프트는 원본 데이터에 있는 8개의 약물 이름을 추출하여 목록에 포함시켰다. 특히 숏 프롬프트는 약물의 투여 용량과 횟수등 세부 처방 지시사항까지 일치했다.
 
 
-### 2. 프롬프트 비교
+#### 퇴원 지시사항 (Discharge Instuctions)
 
-해당 프로젝트의 저자는 짧은 프롬프트가 긴 프롬프트보다 임상 서사가 좋았다고 말했지만, 실제로 비교해 보ㅗㄴ 결과 둘 다 좋지 못한 결과였다.
+- 원본 데이터
+  > eat a low salt diet. You will follow up with Dr. ___ in liver clinic and from there have your colonoscopy and EGD scheduled. (저염식을 드세요. 간 클리닉의 ___ 의사와 후속 진료를 하고, 대장내시경과 위내시경 일정을 잡을 것입니다.)
 
-#### Short Prompt
+- Short Prompt
+  > She was advised to follow up with her primary care physician for continued management of her liver disorder. (간 질환의 지속적인 관리를 위해 주치의와 후속 진료를 하도록 권고받았다.)
 
-- 문장은 매끄럽게 잘 읽힘
-- 하지만 자연스러운 문장을 만들기 위해 없는 사실을 적극적으로 지어냄. 
+- Long Prompt
+  > The patient was discharged home. (환자는 자택으로 퇴원했다.)
+
+### Patient 10001217
+
+Patient 10001217은 뇌종양(Brain Abscess)으로 인한 개두술(Craniotomy)을 받은 다발성 경화증(MS) 환자이다.
+
+#### 초기 내원 상태 및 병력 (HPI & Mental Status)
+
+- 원본 데이터
+  - 내원 사유: `headaches and left hand clumsiness` (두통과 왼손의 둔함), `Awake and alert` (정신은 깨어있고 명료함)
+  - 수술 시점: 입원 후 MRI를 찍고 뇌농양이 발견되어 개두술(Craniotomy)을 진행함.
+- Short Prompt
+  - `presented to the Emergency Department via ambulance... with altered mental status.` (구급차를 타고 의식 변화 상태로 응급실에 내원함.)
+  - `history of recent craniotomy` (최근 개두술 병력)
+    - 이번에 입원해서 수술을 받은 건데, 입원하기 전부터 이미 개두술을 받은 병력이 있다고 요약함
+- Long Prompt
+  - `She presented with headache.` (두통을 호소함)
+  - `Craniotomy except for trauma` (외상으로 인한 경우를 제외한 개두술)
+
+#### 진단명 및 수치 (Diagnosis & Labs)
+
+- 원본 데이터
+  - 진단명: `Brain abscess` (뇌종양), 기저질환으로 인한 다발성 경화증(MS) 보유
+  - 배양 검사: `streptococcus Milleri` (연쇄상구균 밀레리 나옴)
+- Short Prompt
+  - `streptococcus anginosus infection` 
+  - 진단명: `encephalopathy` (뇌병증)
+- Long Prompt
+  - `Other issues during admission Encephalopathy Essential hypertension Hyponatraemia` (기타 문제: 본태성 고혈압, 저나트륨혈당증)
+  - `Her sodium level dropped to 123 mmol/L` (나트륨 수치가 123으로 떨어짐) -> 원문 데이터에는 나트륨 수치에 관한 정보가 없음
 
 
-#### Long Prompt
+#### 퇴원 처방 약물 (Discharge Medications) 
 
-- 프롬프트로 양식과 페르소나를 지정해주자 환각이 줄어듦
-- 하지만 형식에 갇혀버려서 임상적 흐름을 버리고 쓸데없는 숫자에 집착함.
-  - ("Her sodium level dropped to 123 mmol/L" -> 원본 기록의 핵심은 뇌농양과 마비 증상이지, 입원 중 잠깐 떨어졌다 회복된 나트륨 수치 123이 아닙니다.)
+- 원본 데이터
+  - `Heparin Flush (10 units/ml) 2 mL IV DAILY and PRN, line flush` -> 수액 라인(PICC)이 막히지 않게 소량으로 씻어내는 단순 관류용
+- Long & Short Prompt
+  - `Heparin 5000 units TID SC / Heparin 5000 units three times a day` (관류용 액체를 하루 3번 피하 주사하는 고용량 항응고제 치료)
+    - 다만 실제 원본에 있었던 약들은 이름, 투여 용량, 복용 횟수까지 완벽하게 뽑아냄
+
+
+## 분석 결론
+
+
+### Short vs. Long Prompt
+
+일반적으로 AI에게 지시사항을 길고 상세하게 줄수록 좋은 결과가 나올 것이라 기대하지만, 본 프로젝트의 정형 데이터 요약 태스크에서는 완전히 정반대의 현상이 나타났다.
+
+- Short Prompt: 구조와 항목만 간단히 제시했을 때, 모델은 제공된 입력 데이터 안에서 약물 이름, 날짜 등을 비교적 무난하게 매핑(Mapping)했다. 비록 복수천자 같은 핵심 사건을 서술하지 못하고 단순 나열에 그쳤지만, 데이터에서 크게 벗어나는 내용을 쓰려는 경향은 덜했다.
+
+- Long Prompt: 지시사항과 제약 조건이 늘어나자 모델 내부에서 어텐션(Attention) 분산이 심각하게 발생했다. 환자의 메인 질환(뇌농양, 문맥고혈압)을 보지 못하고, 경미한 랩 수치(칼륨 3.4) 하나에 과몰입하여 엉뚱한 병명을 메인으로 내세웠다. 심지어 원본에 없는 가짜 수치(나트륨 123)와 세균(푸조박테리움)을 창작해 내는 Hallucination을 보였다.
