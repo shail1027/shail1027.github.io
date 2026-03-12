@@ -1,7 +1,7 @@
 ---
 title: "[논문 정리 및 구현 #1] Attntion Is All You Need"
 author: Lee Yebin
-date: 2026-03-12 13:37:00 +0900
+date: 2026-03-11 13:37:00 +0900
 categories: [TECH, AI & Data]
 tags: [논문, LLM]
 pin: false
@@ -109,7 +109,7 @@ Transformer는 크게 인코더(Encoder)와 디코더(Decoder)로 나뉜다.
 
 #### 1. Scaled Dot-Product Attention 스케일드 닷 프로덕트 어텐션
 
-![Scaled Dot-Product Attention 구조](../assets/img/attentionisallyouneed/sdpm.png)
+![Scaled Dot-Product Attention 구조](../assets/img/attentionisallyouneed/sdpa.png)
 
 참... 이름이 길고 어려워 보이지만, 사실은 굉장히 간단한 개념이다. 쿼리, 키, 값 벡터가 주어졌을 때, 어텐션은 다음과 같이 계산된다.
 
