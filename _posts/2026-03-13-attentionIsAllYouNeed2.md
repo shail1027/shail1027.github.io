@@ -235,3 +235,187 @@ batch_size = 64
 - 이는 병렬 처리가 연산량 자체를 줄여주지는 않는다는 것이다.
 - Transformer는 모든 토큰이 서로를 쳐다봐야 하므로 총 연산 횟수가 시퀀스 길이에 따라 제곱으로 증가한다. 병렬 처리를 통해 대기 시간은 줄였지만, GPU가 처리해야 할 총 업무량 자체가 늘어나기 때문에 학습 시간이 증가하는 것이다.
 
+
+## 2. 실험2: IMDB 데이터셋으로 보는 Attention 시각화
+
+실험 1에서 진행한 첫 번째 토큰 찾기는 모델의 아키텍처 특성을 파악하기엔 좋았으나, 실제 언어가 가진 문맥을 담지는 못했다. 따라서 실험 2에서는 IMDB 데이터셋을 활용하여 아래와같은 가설을 검증해보았다.
+- 성능: 긍정/부정 분류라는 실제 언어의 문맥을 담은 태스크에서, RNN은 문장이 길어질수록 초반의 표현을 잊고 후반부 단어에 치우칠 가능성이 있지만, Transformer는 전체 문맥을 골고루 참조하여 더 높은 정확도를 보일 것이다.
+- 시각화: Transformer의 Self-Attention 메커니즘을 시각화하면, 감정을 결정짓는 핵심 형용사에 강한 가중치가 부여되는 것을 확인할 수 있을 것이다.
+
+감정 문류는 문장을 읽고 작성자의 감정이 긍정(1)인지 부정(0)인지 이진 분류(Binary Classification)하는 태스크이다. 
+- 데이터셋: IMDB 영화 리뷰 데이터셋 (25,000개의 훈련 샘플과 25,000개의 테스트 샘플로 구성)
+- 전처리 과정: HTML 태그 및 특수문자 제거, 토큰화, 패딩 및 트렁케이팅
+- 모델 구조: 실험 1에서 사용한 RNN과 Transformer 모델을 감정 분류 태스크에 맞게 수정하여 사용
+
+
+### 1.1 IMDB 전처리
+
+```python
+def tokenizer(text):
+    text = text.lower()  # 소문자 변환
+    text = re.sub(r"<[^>]+>", "", text)  # HTML 태그 제거
+    text = re.sub(r"[^a-z0-9\s]", "", text)  # 특수문자 제거
+    return text.split()  # 공백 기준 토큰화
+
+dataset = load_dataset("imdb")
+counter = Counter()
+for eg in dataset["train"]:
+    # 각 리뷰를 토큰화하여 단어 등장 횟수를 카운트함
+    counter.update(tokenizer(eg["text"]))
+```
+- `tokenizer` 함수는 텍스트를 소문자로 변환하고, HTML 태그와 특수문자를 제거한 후, 공백을 기준으로 토큰화하는 역할을 한다. 이렇게 전처리된 텍스트는 모델이 학습하기에 더 적합한 형태로 변환된다.
+- `Counter` 객체를 사용하여 훈련 데이터셋의 모든 리뷰에서 단어 등장 횟수를 카운트한다. 이를 통해 단어 빈도에 기반한 어휘 사전을 구축할 수 있다.
+
+```python
+vocab_size = 10000 # 사전에 포함할 최대 단어 수
+vocab = {"<PAD>": 0, "<UNK>": 1} # 특수 토큰 정의
+
+# 가장 빈번하게 등장한 단어 순으로 고유 번호 부여
+for word, _ in counter.most_common(vocab_size - 2):
+    vocab[word] = len(vocab)
+```
+- `vocab_size`는 모델이 학습할 때 사용할 최대 단어 수를 정의한다. 여기서는 10,000으로 설정하였다.
+- `vocab` 딕셔너리는 특수 토큰 `<PAD>`와 `<UNK>`를 포함하여 단어와 고유 번호를 매핑하는 역할을 한다. `<PAD>`는 패딩 토큰으로 사용되고, `<UNK>`는 어휘 사전에 없는 단어를 나타내는 토큰이다.
+- `counter.most_common(vocab_size - 2)`를 사용하여 가장 빈번하게 등장한 단어를 순서대로 가져와서 `vocab` 딕셔너리에 고유 번호를 부여한다. 이렇게 하면 모델이 학습할 때 자주 등장하는 단어에 대한 임베딩을 학습할 수 있다.
+    - 2를 뺴는 이유는 `<PAD>`와 `<UNK>` 토큰이 이미 2개의 고유 번호를 차지하기 때문이다.
+    - `<PAD`:0, 문장의 길이를 맞추기 위해 채워넣는 빈 공간
+    - `<UNK>`:1, 어휘 사전에 없는 단어를 나타내는 토큰
+
+
+## 1.2 데이터 변환
+
+원문 데이터를 파이토치 모델에 바로 넣을 수 있는 형태로 가공해야 한다.
+
+```python
+class IMDBDataset(torch.utils.data.Dataset):
+    def __init__(self, hf_dataset, vocab, max_length = 256):
+        self.data = list()
+        self.labels = list()
+        for eg in hf_dataset:
+            tokens = tokenizer(eg["text"])
+            encoded = [vocab.get(word, vocab["<UNK>"]) for word in tokens]
+            if len(encoded) < max_length:
+                encoded += [vocab["<PAD>"]] * (max_length - len(encoded))
+            else:
+                encoded = encoded[:max_length]
+            self.data.append(encoded)
+            self.labels.append(eg["label"])
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return torch.tensor(self.data[idx]), torch.tensor(self.labels[idx], dtype = torch.float32)
+```
+위와 같이 `IMDBDataset` 클래스를 정의하여, Hugging Face 데이터셋에서 텍스트 데이터를 토큰화하고, 어휘 사전을 사용하여 인덱스로 변환한 후, 패딩 또는 트렁케이팅을 수행하여 고정된 길이의 시퀀스로 변환한다. 이렇게 변환된 데이터는 모델에 입력으로 사용할 수 있는 형태가 된다. 또한, 각 샘플의 레이블도 함께 저장하여 모델이 학습할 때 사용할 수 있도록 한다.
+- `IMDBDataset` 클래스는 PyTorch의 `Dataset` 클래스를 상속하여 구현된 커스텀 데이터셋 클래스이다. 이 클래스는 Hugging Face 데이터셋에서 텍스트 데이터를 처리하여 모델에 입력으로 사용할 수 있는 형태로 변환하는 역할을 한다.
+- `__init__` 메서드는 데이터셋을 초기화하는 역할을 한다
+- `__getitem__` 메서드는 데이터셋에서 특정 인덱스에 해당하는 샘플을 반환하는 역할을 한다. 이 메서드는 모델이 학습할 때 배치 단위로 데이터를 가져올 때 사용된다. 반환되는 데이터는 텐서 형태로 변환되어 모델에 입력으로 사용할 수 있다.
+- vocab.get(word, vocab["<UNK>"])는 어휘 사전에 없는 단어에 대해 `<UNK>` 토큰의 인덱스를 반환하도록 한다. 이렇게 하면 모델이 학습할 때 어휘 사전에 없는 단어를 처리할 수 있다.
+
+
+### 1.3 모델 정의
+
+```python
+class VisualizableTransformer(nn.Module):
+    def __init__(self, vocab_size, embed_dim, max_seq_length=256):
+        super().__init__()
+        self.embedding = nn.Embedding(vocab_size, embed_dim)
+        self.pos_embedding = nn.Embedding(max_seq_length, embed_dim)
+
+        self.encoder_layer = nn.TransformerEncoderLayer(
+            d_model=embed_dim, nhead=2, dim_feedforward=embed_dim*2, batch_first=True
+        )
+        self.fc = nn.Linear(embed_dim, 2)
+
+    def forward(self, x, return_attn=False):
+        seq_len = x.size(1)
+        positions = torch.arange(0, seq_len, device=x.device).unsqueeze(0).expand(x.size(0), -1)
+        embedded = self.embedding(x) + self.pos_embedding(positions)
+
+        if return_attn:
+            attn_output, attn_weights = self.encoder_layer.self_attn(embedded, embedded, embedded, need_weights=True)
+            out = self.fc(attn_output[:, -1, :])
+            return out, attn_weights
+        else:
+            out = self.encoder_layer(embedded)
+            last_output = out[:, -1, :]
+            return self.fc(last_output)
+```
+- `VisualizableTransformer` 클래스는 Transformer 모델을 정의하는 PyTorch 모듈이다. 이 모델은 입력 시퀀스를 임베딩하고, 위치 임베딩을 추가한 후, Transformer 인코더 레이어를 통과시켜 최종적으로 감정 분류를 수행하는 구조로 되어 있다.
+- `forward` 메서드는 모델의 순전파 과정을 정의한다. 입력 시퀀스 `x`를 임베딩하고, 위치 임베딩을 추가한 후, Transformer 인코더 레이어를 통과시킨다. `return_attn` 인자를 통해 어텐션 가중치를 반환할지 여부를 결정할 수 있다. 어텐션 가중치를 반환하는 경우, `self_attn` 메서드에서 `need_weights=True`로 설정하여 어텐션 가중치를 계산하도록 한다. 최종 출력은 시퀀스의 마지막 타임스텝의 출력을 사용하여 감정 분류를 수행한다.
+- `nn.TransformerEncoderLayer`는 PyTorch에서 제공하는 Transformer 인코더 레이어를 정의하는 클래스이다. `d_model`은 임베딩 차원, `nhead`는 어텐션 헤드의 수, `dim_feedforward`는 피드포워드 네트워크의 차원을 설정하는 하이퍼파라미터이다. `batch_first=True`로 설정하여 입력 텐서의 첫 번째 차원이 배치 크기가 되도록 한다.
+- `self.pos_embedding`은 위치 임베딩 레이어를 정의한다. Transformer는 시퀀스의 순서를 인식하기 위해 위치 정보를 필요로 하므로, 각 위치에 대한 임베딩을 학습한다. `max_seq_length`는 모델이 처리할 수 있는 최대 시퀀스 길이를 설정하는 하이퍼파라미터이다.
+- `return_attn` 인자를 통해 어텐션 가중치를 반환할지 여부를 결정할 수 있다. 일반적인 PyTorch의 `TransformerEncoder`를 그냥 통과시키면 최종 결과물만 나오고 내부의 Attention 점수는 나오지 않지만, `self_attn` 메서드를 직접 호출하여 `need_weights=True`로 설정하면 어텐션 가중치를 계산하여 반환할 수 있다. 이렇게 하면 모델이 입력 시퀀스의 어떤 부분에 주목하는지를 시각화할 수 있다.
+
+### 1.4 모델 학습 함수
+
+```python
+def train_model(model, dataloader, criterion, optimizer, num_epochs=3):
+    model.train()
+    for epoch in range(num_epochs):
+        total_loss = 0
+        correct = 0
+        total = 0
+        for inputs, targets in dataloader:
+            inputs, targets = inputs.to(device), targets.to(device).long()
+
+            optimizer.zero_grad()
+            outputs = model(inputs) 
+
+            loss = criterion(outputs, targets)
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+            _, predicted = outputs.max(1)
+            total += targets.size(0)
+            correct += predicted.eq(targets).sum().item()
+
+        acc = 100. * correct / total
+        print(f"Epoch {epoch+1}/{num_epochs} | Loss: {total_loss/len(dataloader):.4f} | Acc: {acc:.2f}%")
+```
+- `train_model` 함수는 모델을 학습하는 역할을 한다. 주어진 데이터로더를 사용하여 모델을 학습시키고, 각 에폭마다 손실과 정확도를 출력한다. 이 함수는 모델이 충분히 학습될 때까지 반복적으로 데이터를 입력하여 모델의 매개변수를 업데이트한다.
+- `model.train()`은 모델을 학습 모드로 설정한다. 이는 드롭아웃과 배치 정규화와 같은 레이어가 학습 모드에서 동작하도록 한다.
+- `optimizer.zero_grad()`는 모델의 매개변수에 대한 기울기를 초기화한다. 이는 이전 배치에서 계산된 기울기가 누적되는 것을 방지하기 위해 필요하다.
+- `loss.backward()`는 손실 함수에 대한 기울기를 계산한다. 이는 모델의 매개변수에 대한 기울기를 자동으로 계산하여 역전파를 수행한다.
+- `optimizer.step()`는 모델의 매개변수를 업데이트한다.
+
+
+### 1.5 모델 평가 및 어텐션 시각화
+
+```python
+vocab_size = len(vocab)
+embed_dim = 64
+hidden_dim = 64
+
+print("\n--- Transformer 학습 시작 ---")
+tf_model = VisualizableTransformer(vocab_size, embed_dim).to(device)
+criterion = nn.CrossEntropyLoss()
+tf_optim = optim.Adam(tf_model.parameters(), lr=0.001)
+
+train_model(tf_model, train_loader, criterion, tf_optim, num_epochs=10)
+
+print("\n--- 어텐션 맵 시각화 ---")
+visualize_attention_wrapped(tf_model, test_dataset, idx_to_word, sample_idx=10, tokens_per_row=20)
+```
+- `train_model` 함수를 호출하여 Transformer 모델을 학습시킨다. 학습이 완료된 후, `visualize_attention_wrapped` 함수를 호출하여 테스트 데이터셋에서 특정 샘플에 대한 어텐션 맵을 시각화한다.
+- `visualize_attention_wrapped` 함수는 모델과 데이터셋, 인덱스-단어 매핑을 입력으로 받아, 특정 샘플에 대한 어텐션 맵을 시각화하는 래퍼 함수이다. `sample_idx`는 시각화할 샘플의 인덱스를 지정하고, `tokens_per_row`는 시각 행에 표시할 토큰의 수를 설정한다. 이 함수를 통해 모델이 입력 시퀀스의 어떤 부분에 주목하는지를 시각적으로 확인할 수 있다.
+
+10에폭 정도 학습을 시킨 후, 테스트 데이터셋에서 특정 샘플에 대한 어텐션 맵을 시각화 해보았다. 
+
+![image](../assets/img/attentionisallyouneed/exp4.png)
+![image](../assets/img/attentionisallyouneed/exp3.png)
+
+1. 학습 지표 분석
+- 정확도: 61% -> 95%. 첫 에폭에서는 아쉬운 정확도를 보였지만 10에폭만에 95%의 정확도를 달성하였다. 
+- 손실: 0.64 -> 0.12. 손실 값이 꾸준히 우하향하며 안정적으로 학습이 진행되고 있음을 보여준다.
+
+2. 어텐션 맵 해석
+- 최고점 1.00: `awful` 단어에 가장 높은 어텐션 가중치가 부여되었다. 이는 모델이 이 단어를 감정 분류에 있어서 가장 중요한 단어로 인식하고 있음을 시사한다. 
+- 핵심 키워드: `waste`, `nonsense`, `disaster`같은 영화 비평에 자주 쓰이는 부정적 어휘들을 짚어내고 있다.
+
+
+시각화 결과, Transformer는 사람이 글을 읽을 때와 유사한 방식으로 문장을 처리하고 있는 것을 알 수 있었다. `awful(1.00)`이나 `disaster(0.38)` 같은 감성 키워드뿐만 아니라, 의미를 반전시키는 `never`, `werent` 같은 부정어까지 정확히 포착해냈다.
+
+특히 Min-Max 정규화를 통해 어텐션 가중치가 0에서 1 사이로 스케일링되어, 모델이 어떤 단어에 가장 집중하고 있는지를 명확하게 시각화할 수 있었다. 이는 Transformer의 Self-Attention 메커니즘이 단어 간의 관계를 어떻게 학습하는지를 이해하는 데 큰 도움이 되었다.
