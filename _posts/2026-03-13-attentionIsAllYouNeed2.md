@@ -1,7 +1,7 @@
 ---
 title: "[논문 정리 및 구현 #2] Attntion Is All You Need"
 author: Lee Yebin
-date: 2026-03-13 11:33:27 +0900
+date: 2026-03-15 11:33:27 +0900
 categories: [TECH, AI & Data]
 tags: [논문, LLM]
 pin: false
