@@ -2,7 +2,7 @@ backend:
   name: github
   repo: shail1027/shail1027.github.io
   branch: main
-  base_url: https://decap-proxy.netlify.app
+  base_url: https://decap-proxy.yi838953.workers.dev
 
 media_folder: "assets/img/posts"
 public_folder: "/assets/img/posts"
